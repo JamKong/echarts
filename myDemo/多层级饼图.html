@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="echarts.js"></script>
+</head>
+
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="myChart1" style="width: 1000px;height:600px;"></div>
+    <script type="text/javascript">
+    var count = 0;
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.getElementById('myChart1'));
+
+
+    // 获取扇形的样式
+    function getSerieItemStyle(normalColor, borderWidth, borderColor, emphasisColor, ecBorderWidth, ecBorderColor) {
+        return {
+            normal: { color: { type: 'linear', colorStops: [{ offset: 0, color: normalColor }, { offset: 1, color: normalColor }] }, borderWidth: borderWidth, borderColor: borderColor },
+            emphasis: { color: { type: 'linear', colorStops: [{ offset: 0, color: emphasisColor }, { offset: 1, color: emphasisColor }] }, borderWidth: ecBorderWidth, borderColor: ecBorderColor }
+        }
+    }
+    var oneSerieItemStyle = getSerieItemStyle("#1f3d8e", 2, '#010F34', "#3C91F5", 3, "#010F34");
+    var twoSerieItemStyle = getSerieItemStyle("#1f3d8e", 3, '#010F34', "#3C91F5", 4, "#010F34");
+    var threeSerieItemStyle = getSerieItemStyle("#1f3d8e", 4, '#010F34', "#3C91F5", 5, "#010F34");
+    // var labelStyle = { normal: { show: false }, emphasis: { show: false } };
+    var unActiveStyle = {
+        label: { normal: { show: false }, emphasis: { show: false } }
+    }
+    // 选中样式
+    var activeStyle = {
+        label: {
+            normal: { show: false },
+            emphasis: {
+                show: true,
+                textStyle: { fontSize: 18, color: '#F6A623' }
+            }
+        },
+        labelLine: {
+            normal: {
+                show: false
+            },
+            emphasis: {
+                show: true,
+                lineStyle: {
+                    color: '#F6A623'
+                }
+            }
+        }
+
+    }
+    var unSelectedOfLabelStyle = {
+        label: {
+            normal: { show: false },
+            emphasis: {
+                show: true,
+                textStyle: { fontSize: 18, color: '#F6A623' }
+            }
+        },
+        labelLine: {
+            normal: {
+                show: false
+            },
+            emphasis: {
+                show: true,
+                lineStyle: {
+                    color: '#F6A623'
+                }
+            }
+        }
+    }
+
+    // 数据
+    var data = [
+        [{ value: 100, name: '云计算大数据', click: clearSelected }],
+        [
+            { id: "1", value: 20, name: '一级-1', selected: false, select: select, itemStyle: oneSerieItemStyle },
+            { id: "2", value: 10, name: '一级-2', selected: false, select: select, itemStyle: oneSerieItemStyle },
+            { id: "3", value: 25, name: '一级-3', selected: false, select: select, itemStyle: oneSerieItemStyle },
+            { id: "4", value: 25, name: '一级-4', selected: false, select: select, itemStyle: oneSerieItemStyle },
+            { id: "5", value: 20, name: '一级-5', selected: false, select: select, itemStyle: oneSerieItemStyle }
+        ],
+        [
+            //一级-1 占中为20，以下将按20%的比例分
+            { id: '1-1', value: 10, name: '二级-1-1', parent: "1", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '1-2', value: 10, name: '二级-1-2', parent: "1", selected: false, select: select, itemStyle: twoSerieItemStyle },
+
+            //一级-2 占中为10，以下将按10%的比例分
+            { id: '2-1', value: 10, name: '二级-2-1', parent: "2", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            //25
+            { id: '3-1', value: 7, name: '二级-3-1', parent: "3", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '3-2', value: 7, name: '二级-3-2', parent: "3", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '3-3', value: 7, name: '二级-3-3', parent: "3", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '3-4', value: 4, name: '二级-3-4', parent: "3", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            //25
+            { id: '4-1', value: 8, name: '二级-4-1', parent: "4", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '4-2', value: 8, name: '二级-4-2', parent: "4", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '4-3', value: 9, name: '二级-4-3', parent: "4", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            //20
+            { id: '5-1', value: 10, name: '二级-5-1', parent: "5", selected: false, select: select, itemStyle: twoSerieItemStyle },
+            { id: '5-2', value: 10, name: '二级-5-2', parent: "5", selected: false, select: select, itemStyle: twoSerieItemStyle }
+
+        ],
+        [
+            //二级-1 占中为20，以下将按20%的比例分
+            { id: '1-1-1', value: 1, name: '三级-1-1', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-2', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-3', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-4', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-5', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-6', value: 1, name: '三级-1-1', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-7', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-8', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-9', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-1-10', value: 1, name: '三级-1-2', parent: "1-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+
+            { id: '1-2-1', value: 2, name: '三级-1-3', parent: "1-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-2-2', value: 2, name: '三级-1-4', parent: "1-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-2-3', value: 2, name: '三级-1-3', parent: "1-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-2-4', value: 2, name: '三级-1-4', parent: "1-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '1-2-5', value: 2, name: '三级-1-3', parent: "1-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+
+
+            //二级-2 占中为10，以下将按10%er
+            { id: '2-1-1', value: 10, name: '三级-2-1', parent: "2-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+
+            //25    
+            { id: '3-1-1', value: 7, name: '三级-3-1', parent: "3-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '3-2-1', value: 7, name: '三级-3-2', parent: "3-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '3-3-1', value: 7, name: '三级-3-3', parent: "3-3", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '3-4-1', value: 4, name: '三级-3-4', parent: "3-4", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            //25
+            { id: '4-1-1', value: 8, name: '三级-4-1', parent: "4-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '4-2-1', value: 8, name: '三级-4-2', parent: "4-2", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '4-3-1', value: 9, name: '三级-4-3', parent: "4-3", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            //20
+            { id: '5-1-1', value: 10, name: '三级-5-1', parent: "5-1", selected: false, select: select, itemStyle: threeSerieItemStyle },
+            { id: '5-2-1', value: 10, name: '三级-5-2', parent: "5-2", selected: false, select: select, itemStyle: threeSerieItemStyle }
+
+        ]
+
+    ];
+
+    // 指定图表的配置项和数据
+    var option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            data: ['直达', '营销广告', '搜索引擎', '邮件营销', '联盟广告', '视频广告', '百度', '谷歌', '必应', '其他']
+        },
+        backgroundColor: "#060e48",
+        series: [{
+                name: '访问来源',
+                type: 'pie',
+                radius: [0, '30%'],
+                label: { normal: { position: 'inner' } },
+                labelLine: { normal: { show: false } },
+                data: data[0],
+                // animation: false, //是否开启动画
+                hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
+                itemStyle: {
+                    normal: { color: { type: 'linear', colorStops: [{ offset: 0, color: '#3C91F5' }, { offset: 1, color: '#3C91F5' }] } }
+                }
+            },
+            {
+                name: '第一级',
+                type: 'pie',
+                radius: ['31%', '45%'],
+                // hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
+                hoverOffset: 0,
+                selectedOffset: 0,
+                label: unActiveStyle.label,
+                // 将圆分成100份，看每个指标的比重
+                data: data[1]
+
+            },
+            {
+                name: '第二级',
+                type: 'pie',
+                radius: ['46%', '65%'],
+                // selectedMode: 'multiple',
+                // hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
+                hoverOffset: 0,
+                selectedOffset: 0,
+                label: unActiveStyle.label,
+                // legendHoverLink:true,
+                data: data[2]
+            },
+            {
+                name: '第三级',
+                type: 'pie',
+
+                radius: ['66%', '85%'],
+                // hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
+                hoverOffset: 0,
+                selectedOffset: 0,
+                label: activeStyle.label,
+                labelLine: activeStyle.labelLine,
+                // legendHoverLink:true,    
+                data: data[3]
+            }
+
+
+        ]
+    };
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart1.setOption(option);
+    myChart1.on('click', function(params) {
+        // console.log(params);
+        console.log(option);
+        if (!!params.data.click && (typeof params.data.click == "function")) {
+            params.data.click();
+        }
+        if (!!params.data.select && (typeof params.data.select == "function")) {
+            params.data.select(params);
+        }
+    })
+    
+    // var prePosition = null;
+    // myChart1.on('mouseover', function(params) {
+    //     // console.log(params)
+    //     prePosition = params;
+    // })
+    // myChart1.on('mouseout', function(params) {        
+    //     downplay(prePosition.seriesIndex, prePosition.dataIndex)
+    //     if (!!prePosition.data.selected) {
+    //         highlight(prePosition.seriesIndex, prePosition.dataIndex)
+    //     }
+    // })
+
+    // myChart1.on("pieselectchanged", function(params) {
+
+    //     console.log(params);
+    //     console.log(option);
+    // })
+
+
+
+    //清空所有选中的
+    function clearSelected() {
+        console.log("清空所有选中的");
+        for (var i = 0; i < option.series.length; i++) {
+            for (var j = 0; j < option.series[i].data.length; j++) {
+                option.series[i].data[j].selected = false;
+                myChart1.dispatchAction({
+                    type: "downplay",
+                    seriesIndex: i,
+                    dataIndex: j
+                });
+            }
+        }
+
+    }
+
+    //默认选择
+    function select(params) {
+
+        var curSeries = option.series[params.seriesIndex]; //点击所在的级数（圈）
+        var curSection = curSeries.data[params.dataIndex]; //当前扇区
+        clearSelected();
+        highlight(params.seriesIndex, params.dataIndex)
+        curSection.selected = true;
+        selectParents(curSection);
+        selectChildrens(curSection);
+        console.log(option)
+    }
+    //选中父级
+    function selectParents(curSection) {
+        var parentId = curSection['parent'];
+        if (!parentId || parentId.length <= 0) {
+            return;
+        }
+        var parentSection = findById(parentId);
+        if (!!parentSection) {
+            highlight(parentSection.seriesIndex, parentSection.dataIndex);
+            parentSection.data.selected = true;
+            selectParents(parentSection.data);
+        }
+
+    }
+
+
+    function selectChildrens(curSection) {
+        if (!!curSection.id) {
+            var childs = findChildsByParentId(curSection.id);
+            for (var i = 0; i < childs.length; i++) {
+                highlight(childs[i].seriesIndex, childs[i].dataIndex);
+                childs[i].data.selected = true;
+                selectChildrens(childs[i].data);
+            }
+        }
+
+    }
+
+
+    function findById(id) {
+        for (var i = 0; i < data.length; i++) { //层级（圈）
+            for (var j = 0; j < data[i].length; j++) { //扇区
+                if (data[i][j].id == id) {
+                    return { data: data[i][j], seriesIndex: i, dataIndex: j };
+                }
+            }
+        }
+    }
+
+
+
+    function findChildsByParentId(parentId) {
+        var childs = [];
+        for (var i = 0; i < data.length; i++) { //层级（圈）
+            for (var j = 0; j < data[i].length; j++) { //扇区
+                if (!!data[i][j].parent && data[i][j].parent == parentId) {
+                    childs.push({ data: data[i][j], seriesIndex: i, dataIndex: j })
+                }
+            }
+        }
+        return childs;
+    }
+
+    function highlight(seriesIndex, dataIndex) {
+
+        myChart1.dispatchAction({
+            type: "highlight",
+            seriesIndex: seriesIndex,
+            dataIndex: dataIndex
+        });
+    }
+
+    function downplay(seriesIndex, dataIndex) {
+        myChart1.dispatchAction({
+            type: "downplay",
+            seriesIndex: seriesIndex,
+            dataIndex: dataIndex
+        });
+    }
+
+    //旧版
+    // function selectedOld(option, params) {
+    //     var curSeries = option.series[params.seriesIndex]; //点击所在的级数（圈）
+    //     var curSection = curSeries.data[params.dataIndex]; //当前扇区
+    //     var isSelected = !curSection.selected;
+    //     // curSection.selected = !curSection.selected;
+    //     var showGroups;
+    //     var isInGroup = false;
+    //     showGroups = params.data.showGroups[0] || [];
+    //     for (var i = 0; i < option.series.length; i++) {
+    //         for (var j = 0; j < option.series[i].data.length; j++) {
+    //             if (!option.series[i].data[j].groups) {
+    //                 continue;
+    //             }
+    //             isInGroup = false;
+    //             for (var k = 0; k < option.series[i].data[j].groups.length; k++) {
+    //                 if (showGroups == option.series[i].data[j].groups[k]) {
+    //                     isInGroup = true;
+    //                     break;
+    //                 }
+    //             }
+
+    //             if (!!isInGroup && option.series[i].data[j].selected == !!isSelected) {
+    //                 //先重置
+    //                 myChart1.dispatchAction({
+    //                     type: "downplay",
+    //                     seriesIndex: i,
+    //                     dataIndex: j
+    //                 });
+    //                 myChart1.dispatchAction({
+    //                     type: isSelected && isInGroup ? "highlight" : "downplay",
+    //                     seriesIndex: i,
+    //                     dataIndex: j
+    //                 });
+    //                 continue;
+    //             }
+
+    //             option.series[i].data[j].selected = !!isInGroup ? isSelected : false;
+
+
+    //             myChart1.dispatchAction({
+    //                 type: isSelected && isInGroup ? "highlight" : "downplay",
+    //                 seriesIndex: i,
+    //                 dataIndex: j
+    //             });
+
+    //         }
+    //     }
+    // }
+    </script>
+</body>
+
+</html>
