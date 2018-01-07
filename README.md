@@ -144,7 +144,11 @@ ECharts is available under the BSD 3 license.
 
 ![](http://ww1.sinaimg.cn/large/00657UXaly1fn821wgv37j31640wudjn.jpg)
 
+------
+
 ![](http://ww1.sinaimg.cn/large/00657UXaly1fn827ba203j316s0vujyi.jpg)
+
+------
 
 ![](http://ww1.sinaimg.cn/large/00657UXaly1fn827k95j2j31120votf0.jpg)
 
