@@ -141,5 +141,13 @@ ECharts is available under the BSD 3 license.
 
 ## 我自己的案例
 实现了多层级联动，以及hover、selected的样式效果隔离
+
 ![](http://ww1.sinaimg.cn/large/00657UXaly1fn821wgv37j31640wudjn.jpg)
+
+![](http://ww1.sinaimg.cn/large/00657UXaly1fn827ba203j316s0vujyi.jpg)
+
+![](http://ww1.sinaimg.cn/large/00657UXaly1fn827k95j2j31120votf0.jpg)
+
+
+
 
