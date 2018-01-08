@@ -5,17 +5,15 @@
     <meta charset="utf-8">
     <title>ECharts</title>
     <!-- 引入 echarts.js -->
-    <script src="echarts.js"></script>
+    <script src="echart.min.js"></script>
 </head>
 
 <body>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
     <div id="myChart1" style="width: 1000px;height:600px;"></div>
     <script type="text/javascript">
-    var count = 0;
     // 基于准备好的dom，初始化echarts实例
     var myChart1 = echarts.init(document.getElementById('myChart1'));
-
 
     // 获取扇形的样式
     function getSerieItemStyle(normalColor, borderWidth, borderColor, emphasisColor, ecBorderWidth, ecBorderColor) {
@@ -24,6 +22,7 @@
             emphasis: { color: { type: 'linear', colorStops: [{ offset: 0, color: emphasisColor }, { offset: 1, color: emphasisColor }] }, borderWidth: ecBorderWidth, borderColor: ecBorderColor }
         }
     }
+
     var oneSerieItemStyle = {
         selected: getSerieItemStyle("#1f3d8e", 2, '#010F34', "#3C91F5", 3, "#010F34"),
         hover: getSerieItemStyle("#1f3d8e", 2, '#010F34', "#3975C4", 3, "#010F34")
@@ -40,49 +39,32 @@
     };
 
     var itemStyles = [oneSerieItemStyle, twoSerieItemStyle, threeSerieItemStyle];
-    // var labelStyle = { normal: { show: false }, emphasis: { show: false } };
+
     var unActiveStyle = {
-        label: { normal: { show: false }, emphasis: { show: false } }
+        label: { normal: { show: false }, emphasis: { show: false } },
+        labelLine: { normal: { show: false }, emphasis: { show: false } }
     }
-    // 选中样式
+
     var activeStyle = {
         label: {
             normal: { show: false },
             emphasis: {
                 show: true,
-                textStyle: { fontSize: 18, color: '#CCC' }
+                textStyle: { fontSize: 12,color: '#F6A623'}
             }
         },
         labelLine: {
             normal: {
-                show: false
-            },
-            emphasis: {
-                show: true,
-                lineStyle: {
-                    color: '#CCC'
-                }
-            }
-        }
-
-    }
-    var unSelectedOfLabelStyle = {
-        label: {
-            normal: { show: false },
-            emphasis: {
-                show: true,
-                textStyle: { fontSize: 18, color: '#F6A623' }
-            }
-        },
-        labelLine: {
-            normal: {
-                show: false
+                show: false,
+                length:50,
+                length2:50
             },
             emphasis: {
                 show: true,
                 lineStyle: {
                     color: '#F6A623'
                 }
+
             }
         }
     }
@@ -164,17 +146,13 @@
             trigger: 'item',
             formatter: "{a} <br/>{b}: {c} ({d}%)"
         },
-        legend: {
-            orient: 'vertical',
-            x: 'left',
-            data: ['直达', '营销广告', '搜索引擎', '邮件营销', '联盟广告', '视频广告', '百度', '谷歌', '必应', '其他']
-        },
+
         backgroundColor: "#060e48",
         series: [{
-                name: '访问来源',
+                name: '',
                 type: 'pie',
-                radius: [0, '28%'],
-                label: { normal: { position: 'center', fontSize: 20, color: "#fff" } },
+                radius: [0, '20%'],
+                label: { normal: { position: 'center', fontSize: 16, color: "#fff" } },
                 labelLine: { normal: { show: false } },
                 data: data[0],
                 // animation: false, //是否开启动画
@@ -184,9 +162,9 @@
                 }
             },
             {
-                name: '第一级',
+                name: '一级分类',
                 type: 'pie',
-                radius: ['31%', '45%'],
+                radius: ['23%', '37%'],
                 // hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
                 hoverOffset: 0,
                 selectedOffset: 0,
@@ -196,9 +174,9 @@
 
             },
             {
-                name: '第二级',
+                name: '二级分类',
                 type: 'pie',
-                radius: ['46%', '65%'],
+                radius: ['38%', '53%'],
                 // selectedMode: 'multiple',
                 // hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
                 hoverOffset: 0,
@@ -208,15 +186,15 @@
                 data: data[2]
             },
             {
-                name: '第三级',
+                name: '企业',
                 type: 'pie',
 
-                radius: ['66%', '85%'],
+                radius: ['54%', '70%'],
                 // hoverAnimation: false, //是否开启 hover 在扇区上的放大动画效果。
                 hoverOffset: 0,
                 selectedOffset: 0,
-                label: unSelectedOfLabelStyle.label,
-                labelLine: unSelectedOfLabelStyle.labelLine,
+                label: unActiveStyle.label,
+                labelLine: unActiveStyle.labelLine,
                 // legendHoverLink:true,    
                 data: data[3]
             }
@@ -244,6 +222,8 @@
     function clearSelected() {
         console.log("清空所有选中的");
         for (var i = 0; i < option.series.length; i++) {
+            option.series[i].label = unActiveStyle.label;
+            option.series[i].labelLine = unActiveStyle.labelLine;
             for (var j = 0; j < option.series[i].data.length; j++) {
                 option.series[i].data[j].selected = false;
                 if (i > 0) {
@@ -262,7 +242,7 @@
 
     }
 
-    //默认选择
+
     function select(params) {
         var curSeries = option.series[params.seriesIndex]; //点击所在的级数（圈）
         var curSection = curSeries.data[params.dataIndex]; //当前扇区
@@ -298,6 +278,8 @@
                 highlight(childs[i].seriesIndex, childs[i].dataIndex);
             }
         } else {
+            option.series[params.seriesIndex].label = activeStyle.label;
+            option.series[params.seriesIndex].labelLine = activeStyle.labelLine;
             var members = findByGroup(params.data.group);
             for (var i = 0; i < members.length; i++) {
                 members[i].data.selected = true;
@@ -309,13 +291,7 @@
             }
         }
 
-        highlight(params.seriesIndex, params.dataIndex)
-
-
-
-
-
-
+        highlight(params.seriesIndex, params.dataIndex);
     }
 
     //查询所有父级，返回数组
